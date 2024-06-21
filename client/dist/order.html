@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        /* 文本样式 */
+        .header-text {
+            background-color: #4a90e2;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        /* 样式化商品展示方框 */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+            border-radius: 10px; /* 让背景容器也有圆角 */
+            margin-bottom: 20px;
+        }
+        .order-box {
+            width: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .order-box:hover {
+            transform: scale(1.05);
+        }
+        .order-box img {
+            width: 80%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .order-info {
+            margin-bottom: 10px;
+        }
+        .order-info span {
+            font-weight: bold;
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="orders-container"></div>
+
+    <script>
+        function getOrder() {
+            var token = localStorage.getItem("token");
+            fetch('http://127.0.0.1:8081/orders/detail', {
+                headers: {
+                    'Authorization': token,
+                    'Origin': "http://127.0.0.1"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 将 JSON 数据填充到 HTML 元素中
+                    // var orderContainer = document.getElementById("orderContainer");
+                    // orderContainer.innerHTML = `
+                    //     <h1 class="order-title">${data.order.name}</h1>
+                    //     <div class="order-price">${data.order.price}</div>
+                    //     <div class="order-category">${data.order.category}</div>
+                    //     <img src="${data.order.image}" alt="order Image" class="order-image">
+                    // `;
+                    data.forEach(d => {createOrderElements(d);});
+                })
+                .catch(error => console.error('Error fetching data:', error));            
+        }
+
+        function createOrderElements(orderData) {
+            // 创建订单容器
+            var orderContainer = document.createElement("div");
+
+            // 创建订单编号文本框
+            var headerText = document.createElement("div");
+            headerText.classList.add("header-text");
+            headerText.textContent = "下单用户id：" + orderData.uid + " 订单总金额：" + orderData.amount + " 订单状态：" + orderData.status;
+            orderContainer.appendChild(headerText);
+
+            // 创建商品展示容器
+            var orderItemContainer = document.createElement("div");
+            orderItemContainer.classList.add("container");
+            orderContainer.appendChild(orderItemContainer);
+
+            // 添加商品到商品展示容器中
+            orderData.items.forEach(order => {
+                addorderToContainer(order, orderItemContainer);
+            });
+
+            // 将订单容器添加到页面
+            document.getElementById("orders-container").appendChild(orderContainer);
+        }
+
+        function addorderToContainer(order, container) {
+            var orderBox = document.createElement("div");
+            orderBox.classList.add("order-box");
+
+            var orderInfo1 = document.createElement("div");
+            orderInfo1.classList.add("order-info");
+            orderInfo1.innerHTML = "<span>商品id:</span> <span>" + order.pid + "</span>";
+            orderBox.appendChild(orderInfo1);
+
+            var orderInfo2 = document.createElement("div");
+            orderInfo2.classList.add("order-info");
+            orderInfo2.innerHTML = "<span>购买数量:</span> <span>" + order.quantity + "</span>";
+            orderBox.appendChild(orderInfo2);
+
+            var orderInfo3 = document.createElement("div");
+            orderInfo3.classList.add("order-info");
+            orderInfo3.innerHTML = "<span>商品单价:</span> <span>" + order.price + "</span>";
+            orderBox.appendChild(orderInfo3);
+
+            var orderImage = document.createElement("img");
+            orderImage.src = order.img;
+            orderImage.alt = order.pid;
+            orderBox.appendChild(orderImage);
+
+            container.appendChild(orderBox);
+        }
+
+        window.onload = getOrder;
+
+    </script>
+</body>
+</html>

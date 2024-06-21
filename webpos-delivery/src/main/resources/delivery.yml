@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: webpos-delivery
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/webpos
+    username: root
+    password: root
+  jpa:
+    database: MySQL
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  cloud:
+    function:
+      definition: createDelivery #指定了函数式编程的定义
+    stream:
+      function:
+        bindings:
+          createDelivery-in-0: exchange-delivery #将 createDelivery 函数的输入绑定到名为 exchange-delivery 的消息通道。
+      rabbit:
+        bindings:
+          output:
+            consumer:
+              declare-exchange: false #消费者不会创建一个独立的交换器，而是使用已经存在的交换器。
+
+  rabbitmq:
+    host: localhost   #rabbitmq 服务器的地址
+    port: 5672           #rabbitmq 服务器端口
+    username: guest       #rabbitmq 用户名
+    password: guest       #rabbitmq 密码
+    virtual-host: /       #虚拟路径
+
+server:
+  port: 8085
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    instance:
+      leaseRenewalIntervalInSeconds: 10

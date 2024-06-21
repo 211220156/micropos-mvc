@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login.css">
+    <title>登录界面</title>
+</head>
+<body>
+    <section>
+        <!-- 背景颜色 -->
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="box">
+            <!-- 背景圆 -->
+            <div class="circle" style="--x:0"></div>
+            <div class="circle" style="--x:1"></div>
+            <div class="circle" style="--x:2"></div>
+            <div class="circle" style="--x:3"></div>
+            <div class="circle" style="--x:4"></div>
+            <!-- 登录框 -->
+            <div class="container">
+                <div class="form">
+                    <h2>登录</h2>
+                    <form id="loginForm">
+                        <div class="inputBox">
+                            <input type="text" id="username" placeholder="姓名" value="">
+                        </div>
+                        <div class="inputBox">
+                            <input type="password" id="password" placeholder="密码" value="">
+                        </div>
+                        <div class="inputBox">
+                            <input type="submit" value="登录" id="loginButton">
+                        </div>
+                        <p class="forget">忘记密码?<a href="#">点击这里</a></p>
+                        <p class="forget">没有账户?<a href="#">注册</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 添加 JavaScript 代码 -->
+    <script>
+        // 恢复用户输入的内容
+        document.getElementById("username").value = localStorage.getItem("username") || "";
+        document.getElementById("password").value = localStorage.getItem("password") || "";
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // 阻止默认提交行为
+
+            // 获取表单数据
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // 保存用户输入的内容到 localStorage
+            localStorage.setItem("username", username);
+            localStorage.setItem("password", password);
+
+            // 发送 HTTP POST 请求
+            fetch("http://127.0.0.1:8081/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Origin": "http://127.0.0.1"
+                },
+                body: JSON.stringify({ username: username, password: password })
+            })
+            .then(function(response) {
+                response.json().then(function(data) { // 在这里获取 Info 的键值对 
+                    var token = data.token;
+                    alert(data.message);
+                    if (response.ok) {
+                        localStorage.setItem("token", token); // 跳转到 index.html 页面 
+                        window.location.href = "index.html"; 
+                    }
+                });
+            })
+            .catch(function(error) {
+                console.error("发生错误：", error);
+            });
+        });
+    </script>
+</body>
+</html>

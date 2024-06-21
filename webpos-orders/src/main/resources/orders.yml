@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: webpos-orders
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/webpos
+    username: root
+    password: root
+  jpa:
+    database: MySQL
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  cloud:
+    stream:
+      binders: #需要绑定的rabbitmq的服务信息
+        defaultRabbit: #定义的名称，用于binding整合
+          type: rabbit  #消息组件类型
+#          environment: #配置rabbitmq连接环境
+#            spring:
+#              rabbitmq:
+#                host: localhost   #rabbitmq 服务器的地址
+#                port: 5672           #rabbitmq 服务器端口
+#                username: guest       #rabbitmq 用户名
+#                password: guest       #rabbitmq 密码
+#                virtual-host: /       #虚拟路径
+      bindings: #服务的整合处理
+        orderToDelivery: #这个是消息通道的名称 --->保存订单输出通道
+          destination: exchange-delivery     #exchange名称,交换模式默认是topic;把SpringCloud stream的消息输出通道绑定到RabbitMQ的exchange-delivery交换器。
+          content-type: application/json      #设置消息的类型，本次为json
+          default-binder: defaultRabbit
+          group: delivery               #分组:消费者分组是一种将多个消费者实例组织在一起处理相同消息的机制，同一分组内部会进行负载均衡
+  rabbitmq:
+    host: localhost   #rabbitmq 服务器的地址
+    port: 5672           #rabbitmq 服务器端口
+    username: guest       #rabbitmq 用户名
+    password: guest       #rabbitmq 密码
+    virtual-host: /       #虚拟路径
+server:
+  port: 8083
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    instance:
+      leaseRenewalIntervalInSeconds: 10
+

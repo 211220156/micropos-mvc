@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物流详情</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 10px; /* 让背景容器也有圆角 */
+            margin-bottom: 20px;
+        }         
+        /* 文本样式 */
+        .header-text {
+            background-color: #4a90e2;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="delivery-container"></div>
+
+    <script>
+        function getDelivery() {
+            var token = localStorage.getItem("token");
+            fetch('http://127.0.0.1:8081/delivery', {
+                headers: {
+                    'Authorization': token,
+                    'Origin': "http://127.0.0.1"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(deliveryData => {
+                        var deliveryContainer = document.createElement("div");
+                    
+                        // 创建订单编号文本框
+                        var headerText = document.createElement("div");
+                        headerText.classList.add("header-text");
+                        headerText.textContent = "物流id：" + deliveryData.tracking_num + " 订单id：" + deliveryData.orderId + " 用户id：" + deliveryData.userId + " 物流承运商：" + deliveryData.carrier + " 物流状态：" + deliveryData.status;
+                        deliveryContainer.appendChild(headerText);
+                        document.getElementById("delivery-container").appendChild(deliveryContainer);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));            
+        }
+
+        window.onload = getDelivery;
+
+    </script>
+</body>
+</html>

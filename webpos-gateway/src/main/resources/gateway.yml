@@ -1,0 +1,152 @@
+spring:
+  application:
+    name: gateway
+  freemarker:
+    enabled: true # Use Eureka dashboard FreeMarker templates
+  cloud:
+    gateway:
+      routes:
+        - id: Product
+          uri: http://localhost:8082
+          predicates:
+            - Path=/products/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: Setting
+          uri: http://localhost:8082
+          predicates:
+            - Path=/settings
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: Category
+          uri: http://localhost:8082
+          predicates:
+            - Path=/categories
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: Orders
+          uri: http://localhost:8083
+          predicates:
+            - Path=/orders/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: OrderItems
+          uri: http://localhost:8083
+          predicates:
+            - Path=/orderItems/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: createOrder
+          uri: http://localhost:8083
+          predicates:
+            - Path=/createOrder
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: delivery
+          uri: http://localhost:8085
+          predicates:
+            - Path=/delivery/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: user
+          uri: http://localhost:8086
+          predicates:
+            - Path=/user/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PATCH
+                - OPTIONS
+              allowedHeaders: '*'
+              maxAge: 30
+
+
+error.path: /error
+
+# HTTP Server
+server.port: 8081
+
+# Discovery Server Access
+#  1. DEV ONLY: Reduce the lease renewal interval to speed up registration
+#  2. Define URL of registration server (defaultZone)
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    instance:
+      leaseRenewalIntervalInSeconds: 10 # 服务实例续约租期的时间间隔为10秒
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+webpos:
+  auth:
+    excludePaths:
+      - /user/**
+  jwt:
+    location: classpath:hmall.jks
+    alias: hmall
+    password: hmall123
+    tokenTTL: 30m

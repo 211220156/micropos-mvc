@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品介绍</title>
+    <style>
+        /* 外部容器样式 */
+        .product-container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: linear-gradient(to bottom, rgba(0, 153, 255, 0.5), rgba(255, 102, 204, 0.5)); /* 使用清新的渐变色背景并增加透明度 */
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            color: #333; /* 文字颜色为深灰色 */
+        }
+
+        /* 标题样式 */
+        .product-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* 价格样式 */
+        .product-price {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* 描述样式 */
+        .product-category {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .product-quantity {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .product-average_rating {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .product-rating_number {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* 图片样式 */
+        .product-image {
+            width: 50%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="product-container" id="productContainer">
+        <!-- 数据将在此填充 -->
+    </div>
+
+    <script>
+        function getProductById() {
+            var token = localStorage.getItem("token");
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('productId');
+            fetch('http://127.0.0.1:8081/products/' + productId, {
+                headers: {
+                    'Authorization': token,
+                    'Origin': "http://127.0.0.1"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.average_rating);
+                    console.log(data.rating_number);
+                    // 将 JSON 数据填充到 HTML 元素中
+                    var productContainer = document.getElementById("productContainer");
+                    productContainer.innerHTML = `
+                        <h1 class="product-title">${data.name}</h1>
+                        <div class="product-price">价格：${data.price}</div>
+                        <div class="product-quantity">库存：${data.quantity}</div>
+                        <div class="product-average_rating">用户评价：${data.average_rating}</div>
+                        <div class="product-rating_number">评价人数：${data.rating_number}</div>
+                        <img src="${data.img}" alt="Product Image" class="product-image">
+                    `;
+                })
+                .catch(error => console.error('Error fetching data:', error));            
+        }
+
+        window.onload = getProductById;
+
+    </script>
+</body>
+</html>
